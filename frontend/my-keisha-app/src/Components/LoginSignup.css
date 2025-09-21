@@ -1,0 +1,543 @@
+/* src/styles/qfoodies.css */
+/* ========== CSS Variables & Base ========== */
+:root{
+  --bg: #0f1115;
+  --panel: #151923;
+  --muted: #8b93a7;
+  --text: #e9ecf1;
+  --accent: #ff7a59;
+  --accent-2: #ffd166;
+  --good: #4ade80;
+  --bad: #ef4444;
+  --ring: rgba(255,122,89,0.35);
+  --card: #171b26;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --radius: 18px;
+}
+
+*{ box-sizing:border-box; }
+html,body,#root{ height:100%; }
+body{
+  margin:0;
+  background: radial-gradient(1200px 800px at 80% -10%, #1b2130 0%, #0f1115 40%) fixed,
+              var(--bg);
+  color:var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* Utility */
+.container{
+  width:min(1200px, 92%);
+  margin-inline:auto;
+}
+.hidden{ display:none!important; }
+.badge{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.28rem .6rem;
+  background: linear-gradient(180deg, #21283a, #171b26);
+  border:1px solid #26324b;
+  color:#dbe2ef; font-size:.78rem; border-radius:999px;
+}
+
+/* Focus ring */
+:where(button, input, a, [role="button"]):focus-visible{
+  outline:2px solid var(--ring); outline-offset:2px;
+  border-radius:12px;
+}
+
+/* ========== Navbar ========== */
+.navbar{
+  position:sticky; top:0; z-index:40;
+  backdrop-filter:saturate(1.2) blur(10px);
+  background: color-mix(in hsl, var(--bg) 80%, transparent);
+  border-bottom:1px solid #1f2635;
+}
+.navbar__inner{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem; padding: .8rem 0;
+}
+.brand{
+  display:flex; align-items:center; gap:.7rem; font-weight:800; letter-spacing:.3px;
+}
+.brand__logo{
+  width:38px; height:38px; border-radius:12px;
+  background: conic-gradient(from 220deg, var(--accent), var(--accent-2));
+  box-shadow: 0 6px 18px rgba(255, 122, 89, .35);
+  display:grid; place-items:center; color:#101318; font-weight:900;
+}
+
+/* Nav actions */
+.nav-actions{ display:flex; align-items:center; gap:.6rem; }
+.nav-btn{
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.6rem .85rem; border-radius:12px;
+  background:#121722; border:1px solid #242c3e; color:#e8ecf7;
+  cursor:pointer; transition:transform .12s ease, border-color .12s ease, background .12s ease;
+}
+.nav-btn:hover{ transform:translateY(-1px); border-color:#2c3953; }
+.nav-btn--primary{
+  background:linear-gradient(180deg, #ff7a59, #ef6c4c);
+  border:none; color:#0e1016; font-weight:700;
+  box-shadow: 0 10px 24px rgba(255,122,89,.35);
+}
+.nav-btn--cart{
+  position:relative;
+}
+.nav-btn--cart .cart-count{
+  position:absolute; top:-6px; right:-6px;
+  background:var(--good); color:#08200f; font-weight:800;
+  font-size:.7rem; padding:.1rem .38rem; border-radius:999px; border:2px solid #0f1115;
+}
+
+/* Search */
+.search{
+  flex:1; display:flex; align-items:center; gap:.5rem;
+  padding:.55rem .8rem; border-radius:14px;
+  background:#0f1522; border:1px solid #20283a;
+}
+.search input{
+  flex:1; background:transparent; border:none; color:var(--text);
+  font-size:.95rem; outline:none;
+}
+.search__icon{ opacity:.7; }
+
+/* ========== Hero / Promotions ========== */
+.hero{
+  margin:1.2rem 0 1.6rem;
+  background: linear-gradient(180deg, #111624, #0d1220);
+  border:1px solid #1f283c; border-radius:var(--radius);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.hero__inner{
+  display:grid; grid-template-columns: 1.2fr .8fr; gap:1rem; align-items:center;
+  padding:1.2rem;
+}
+.hero__title{
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  line-height:1.1; margin:0 0 .4rem; font-weight:900;
+}
+.hero__subtitle{ color:var(--muted); margin:0 0 1rem; }
+.hero__cta{ display:flex; gap:.6rem; align-items:center; }
+
+/* Moving food marquee on the right side */
+.hero__marquee{
+  position:relative; width:100%; height:220px; overflow:hidden;
+  border-radius:16px; background: radial-gradient(500px 220px at 20% 20%, #1a2233, #0f141f 60%);
+  border:1px solid #20283a;
+}
+.marquee-track{
+  position:absolute; inset:0;
+  display:flex; align-items:center; gap:26px;
+  padding-inline:26px;
+  animation: marquee 20s linear infinite;
+}
+.marquee-track img{
+  width:120px; height:120px; object-fit:cover; border-radius:20px;
+  transform: translateZ(0);
+  animation: float 6s ease-in-out infinite, wiggle 3.8s ease-in-out infinite;
+  box-shadow: 0 14px 24px rgba(0,0,0,.35);
+  border:1px solid #28324a;
+}
+.marquee-track img:nth-child(3n){ animation-duration: 7.6s, 4.4s; }
+.marquee-track img:nth-child(4n){ animation-duration: 5.8s, 3.4s; }
+
+/* Duplicate track for seamless loop (optional if you add a second .marquee-track) */
+.hero__marquee:hover .marquee-track{
+  animation-play-state: paused; /* pause on hover so users can admire the noms */
+}
+
+/* ========== Sections & Grids ========== */
+.section{
+  margin:1.8rem 0;
+}
+.section__head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  margin-bottom:.8rem;
+}
+.section__title{
+  font-size:1.2rem; font-weight:800; letter-spacing:.2px;
+}
+.section__hint{ color:var(--muted); font-size:.9rem; }
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:14px;
+}
+@media (max-width: 1100px){ .grid{ grid-template-columns: repeat(3, 1fr);} }
+@media (max-width: 780px){ .grid{ grid-template-columns: repeat(2, 1fr);} }
+@media (max-width: 520px){ .grid{ grid-template-columns: 1fr; } }
+
+/* Food Cards */
+.card{
+  background:linear-gradient(180deg, #111724, #0e1421);
+  border:1px solid #1e2840;
+  border-radius:16px; overflow:hidden; box-shadow: var(--shadow);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  position:relative;
+}
+.card:hover{
+  transform: translateY(-4px);
+  border-color:#2a3856;
+  box-shadow: 0 18px 36px rgba(0,0,0,.45);
+}
+.card__media{
+  position:relative; aspect-ratio: 16/11; overflow:hidden;
+}
+.card__media img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transform: translateZ(0);
+  /* Gentle bobbing for “food moves” */
+  animation: float 7.2s ease-in-out infinite;
+}
+.card__badge{
+  position:absolute; top:10px; left:10px;
+}
+.card__body{
+  padding:.9rem;
+}
+.card__title{
+  margin:0 0 .25rem; font-size:1rem; font-weight:800;
+}
+.card__meta{
+  display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+  color:var(--muted); font-size:.9rem;
+}
+.price{ color:#fff; font-weight:900; }
+.rating{ display:inline-flex; align-items:center; gap:.2rem; }
+
+/* Add-to-cart button */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  border-radius:12px; padding:.55rem .85rem;
+  border:1px solid #28324a; background:#121829; color:#e9eef9; cursor:pointer;
+  transition: transform .14s ease, background .14s ease, border-color .14s ease;
+}
+.btn:hover{ transform: translateY(-1px); border-color:#314062; }
+.btn--accent{
+  background:linear-gradient(180deg, var(--accent-2), var(--accent));
+  border:none; color:#101318; font-weight:800;
+  box-shadow: 0 10px 24px rgba(255, 209, 102, .25);
+}
+
+/* ========== Orders / Drawer (optional) ========== */
+.drawer{
+  position:fixed; right:16px; bottom:16px; z-index:50;
+  width:340px; max-width:calc(100vw - 32px);
+  background: linear-gradient(180deg, #0e1421, #0d1220);
+  border:1px solid #1e2740; border-radius:18px; box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.drawer__head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.8rem 1rem; border-bottom:1px solid #1c253a;
+  font-weight:800;
+}
+.drawer__body{ padding: .6rem 1rem 1rem; }
+
+/* ========== Auth Page ========== */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(1200px 800px at 80% -10%, #1b2130 0%, #0f1115 40%) fixed,
+              var(--bg);
+}
+
+.auth-card {
+  background: linear-gradient(180deg, #1a2233 60%, #ff7a59 100%);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.2rem 2rem 2rem 2rem;
+  width: 100%;
+  max-width: 370px;
+  border: 1px solid #1f2635;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.auth-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: .5rem;
+  justify-content: center;
+}
+
+.auth-header .brand__logo {
+  background: conic-gradient(from 220deg, #0074d9, #ff7a59);
+  color: #fff;
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(0, 116, 217, .25);
+}
+
+.auth-header h2 {
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: #0074d9;
+  letter-spacing: .5px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-form input {
+  padding: .7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #0074d9;
+  background: #f5f8fa;
+  color: #222;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.auth-form input:focus {
+  border-color: #ff7a59;
+}
+
+.auth-form .btn {
+  background: linear-gradient(90deg, #0074d9 60%, #ff7a59 100%);
+  color: #fff;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 10px 24px rgba(0, 116, 217, .18);
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 12px;
+  padding: .7rem 1rem;
+  transition: background .15s;
+}
+
+.auth-form .btn:hover {
+  background: linear-gradient(90deg, #ff7a59 60%, #0074d9 100%);
+}
+
+.auth-switch {
+  text-align: center;
+  color: var(--muted);
+  font-size: .98rem;
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: #ff7a59;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: .3rem;
+  font-size: 1rem;
+  transition: color .15s;
+}
+
+.auth-switch button:hover {
+  color: #0074d9;
+}
+
+/* ========== Login / Signup Page ========== */
+.login-signup-wrapper {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: linear-gradient(120deg, #0074d9 0%, #ff7a59 100%);
+  font-family: Inter, system-ui, Arial, sans-serif;
+  transition: background 0.4s;
+}
+
+.login-signup-left {
+  flex: 1;
+  background: radial-gradient(circle at 60% 40%, #1b2130 0%, #0074d9 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  padding: 2rem;
+  min-width: 320px;
+}
+
+.login-signup-logo {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 1.2rem;
+  color: #ffd166;
+  text-shadow: 0 2px 12px #0074d9;
+}
+
+.login-signup-tagline {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #e9ecf1;
+  margin-bottom: 2rem;
+  text-align: center;
+  max-width: 320px;
+}
+
+.login-signup-image {
+  width: 220px;
+  height: 220px;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+  margin-top: 2rem;
+  object-fit: cover;
+}
+
+.login-signup-right {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 320px;
+  padding: 2rem 2.5rem;
+  border-radius: 0 0 0 40px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.10);
+}
+
+.login-signup-form {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0,116,217,0.08);
+  padding: 2rem 1.5rem;
+  margin: 0 auto;
+}
+
+.login-signup-heading {
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: #0074d9;
+  margin-bottom: 0.2rem;
+  text-align: center;
+}
+
+.login-signup-input {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #0074d9;
+  background: #f5f8fa;
+  color: #222;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.login-signup-input:focus {
+  border-color: #ff7a59;
+}
+
+.login-signup-button {
+  background: linear-gradient(90deg, #0074d9 60%, #ff7a59 100%);
+  color: #fff;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 10px 24px rgba(0, 116, 217, .18);
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  margin-top: 0.5rem;
+  transition: background .15s;
+}
+
+.login-signup-switch {
+  text-align: center;
+  color: #0074d9;
+  font-size: 1rem;
+  margin-top: 0.8rem;
+}
+
+.login-signup-link {
+  color: #ff7a59;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 0.3rem;
+  text-decoration: underline;
+  transition: color .15s;
+}
+
+.login-signup-error {
+  color: #ef4444;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.login-signup-success {
+  color: #4ade80;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .login-signup-wrapper {
+    flex-direction: column;
+  }
+  .login-signup-left,
+  .login-signup-right {
+    min-width: 100vw;
+    border-radius: 0;
+    padding: 2rem 1rem;
+  }
+}
+
+/* ========== Animations ========== */
+@keyframes float{
+  0% { transform: translateY(0) rotate(0deg); }
+  50%{ transform: translateY(-6px) rotate(.3deg); }
+  100%{ transform: translateY(0) rotate(0deg); }
+}
+@keyframes wiggle{
+  0%,100%{ transform-origin: 50% 60%; }
+  25%{ transform: rotate(-1.2deg) scale(1.01); }
+  75%{ transform: rotate(1.2deg) scale(1.01); }
+}
+@keyframes marquee{
+  0%{ transform: translateX(0%); }
+  100%{ transform: translateX(-50%); }
+}
+@keyframes drift{
+  0%{ transform: translate3d(0,0,0) rotate(0); }
+  50%{ transform: translate3d(3px,-6px,0) rotate(.6deg); }
+  100%{ transform: translate3d(0,0,0) rotate(0); }
+}
+/* Optional spinning garnish for icons */
+@keyframes spin-slow{
+  from{ transform: rotate(0); }
+  to{ transform: rotate(360deg); }
+}
+
+/* ========== Reduced Motion (Accessibility) ========== */
+@media (prefers-reduced-motion: reduce){
+  .marquee-track,
+  .card__media img,
+  .marquee-track img{ animation: none !important; }
+}
+
+/* ========== Footer ========== */
+.footer{
+  margin:2rem 0 3rem; padding:1rem 0; color:var(--muted);
+  border-top:1px solid #1a2234; text-align:center;
+}
