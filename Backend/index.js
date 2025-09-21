@@ -1,3 +1,6 @@
+// =======================
+// 📦 Dependencies
+// =======================
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -10,15 +13,17 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-//  Connect to MongoDB Atlas
+// =======================
+// 🌐 MongoDB Connection
+// =======================
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     dbName: "Q-FOODS",
   })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error(" MongoDB connection error:", err));
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // =======================
 // 🔐 User Schema & Auth
@@ -31,6 +36,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+// --- Signup ---
 app.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -55,11 +61,14 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// --- Login ---
 app.post("/login", async (req, res) => {
   try {
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Basic ")) {
-      return res.status(401).json({ error: "Missing or invalid Authorization header" });
+      return res
+        .status(401)
+        .json({ error: "Missing or invalid Authorization header" });
     }
 
     const base64Credentials = authHeader.split(" ")[1];
@@ -82,35 +91,40 @@ app.post("/login", async (req, res) => {
 });
 
 // =======================
-// 🍽 Restaurant
+// 🍽 Restaurants
 // =======================
 const restaurantSchema = new mongoose.Schema({
-  name: String,
-  restaurant: String,
+  name: { type: String, required: true },
   description: String,
   image: String,
 });
 
 const Restaurant = mongoose.model("Restaurant", restaurantSchema);
 
-app.get("/Restaurant", async (req, res) => {
+// Get all restaurants
+app.get("/restaurants", async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
     res.json(restaurants);
   } catch (err) {
-    console.error("❌ Fetch Restaurant error:", err);
+    console.error("❌ Fetch restaurants error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-app.post("/Restaurant", async (req, res) => {
+// Create a restaurant
+app.post("/restaurants", async (req, res) => {
   try {
     const { name, description, image } = req.body;
+    if (!name) {
+      return res.status(400).json({ error: "Name is required" });
+    }
+
     const restaurant = new Restaurant({ name, description, image });
     await restaurant.save();
     res.status(201).json({ message: "✅ Restaurant created" });
   } catch (err) {
-    console.error("❌ Create Restaurant error:", err);
+    console.error("❌ Create restaurant error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -135,6 +149,7 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model("Order", orderSchema);
 
+// Place order
 app.post("/orders", async (req, res) => {
   try {
     const { username, items, total } = req.body;
@@ -147,6 +162,7 @@ app.post("/orders", async (req, res) => {
   }
 });
 
+// Get user orders
 app.get("/orders/:username", async (req, res) => {
   try {
     const orders = await Order.find({ username: req.params.username });
@@ -162,10 +178,7 @@ app.get("/orders/:username", async (req, res) => {
 // =======================
 app.post("/checkout", async (req, res) => {
   try {
-    const { orderId, paymentInfo } = req.body;
-
-    // In real apps: Integrate Stripe, PayPal, etc.
-    // Here: Just mark the order as paid.
+    const { orderId } = req.body;
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
@@ -193,6 +206,7 @@ const locationSchema = new mongoose.Schema({
 
 const Location = mongoose.model("Location", locationSchema);
 
+// Save location
 app.post("/location", async (req, res) => {
   try {
     const { username, address, lat, lng } = req.body;
@@ -205,10 +219,12 @@ app.post("/location", async (req, res) => {
   }
 });
 
+// Get user location
 app.get("/location/:username", async (req, res) => {
   try {
     const location = await Location.findOne({ username: req.params.username });
-    if (!location) return res.status(404).json({ error: "Location not found" });
+    if (!location)
+      return res.status(404).json({ error: "Location not found" });
     res.json(location);
   } catch (err) {
     console.error("❌ Get location error:", err);
